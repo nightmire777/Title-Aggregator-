@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+    function extractDateFromUrl(url) {
+        // Regular expression to capture the date in the format YYYY/MM/DD
+        const regex = /\/(\d{4})\/(\d{1,2})\/(\d{1,2})\//;
+        
+        const match = url.match(regex);
+
+        if (match) {
+            // If a match is found, format it as YYYY-MM-DD
+            const year = match[1];
+            const month = match[2];
+            const day = match[3];
+            console.log("date me ")
+            return `${year}-${month}-${day}`;
+        } else {
+            return 'No date found';
+        }
+    }
+
+    function getArticles() {
+    fetch('/end-point', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const articles = document.getElementById('articles');
+        articles.innerHTML = '';                    // Clear existing list
+        data.results.forEach(article => {           // Iterate over `data` directly
+            const date = extractDateFromUrl(article.link); 
+
+            const item = document.createElement('a'); // Create a clickable link
+            item.textContent = `${article.title}  ||  ${date}`; // Add user-friendly text for the link
+            item.href = article.link;
+
+            articles.appendChild(item);
+
+            const lineBreak = document.createElement('br'); // Create a line break
+            articles.appendChild(lineBreak)
+            articles.appendChild(lineBreak)
+
+        });
+    })
+    .catch(error => console.error('Error fetching users:', error));
+}
+    window.onload = getArticles();
+</script>
+<body>
+    <h1>Articles from The Verge</h1>
+    <!--where articles are inserted-->
+    <div class="articles" id="articles">
+        <p>loading articles</p>
+    </div> 
+    
+</body>
+</html>
